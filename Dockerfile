@@ -1,29 +1,31 @@
 # Frontend Build
-FROM node:latest AS node-env
+FROM node:22-alpine AS node-env
 ADD web/. /web/
 WORKDIR /web/
-RUN npm install
+RUN npm install && npm run build
 
 # Build Stage
-FROM golang:1.10.3 AS go-env
+FROM golang:1.24-alpine AS go-env
+RUN apk add --no-cache git
 ADD . /go/src/github.com/wpdirectory/wpdir
-RUN cd /go/src/github.com/wpdirectory/wpdir && go get -d -v
+WORKDIR /go/src/github.com/wpdirectory/wpdir
+RUN go mod download
 
 # Embed Static Files Into Go
-COPY --from=node-env /web /go/src/github.com/wpdirectory/wpdir
+COPY --from=node-env /web /go/src/github.com/wpdirectory/wpdir/web
 WORKDIR /go/src/github.com/wpdirectory/wpdir/scripts/assets/
-RUN go get -d -v && go run -tags=dev assets_generate.go
+RUN go run -tags=dev assets_generate.go
 
 # Compile Binary
 WORKDIR /go/src/github.com/wpdirectory/wpdir
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o wpdir .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags='-w -s' -o wpdir .
 
 # Final Stage
-FROM alpine:latest
+FROM alpine:3.21
 LABEL maintainer="Peter Booker <mail@peterbooker.com>"
 
-RUN apk --no-cache add ca-certificates
-COPY --from=go-env /go/src/github.com/wpdirectory/wpdir/wpdir /usr/local/bin
+RUN apk --no-cache add ca-certificates tzdata
+COPY --from=go-env /go/src/github.com/wpdirectory/wpdir/wpdir /usr/local/bin/wpdir
 WORKDIR /etc/wpdir
 
 ENTRYPOINT ["wpdir"]

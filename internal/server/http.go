@@ -16,7 +16,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/ulule/limiter/drivers/middleware/stdlib"
+	"github.com/ulule/limiter/v3/drivers/middleware/stdlib"
 	"github.com/wpdirectory/wpdir/internal/data"
 	"github.com/wpdirectory/wpdir/internal/limit"
 )
@@ -29,18 +29,14 @@ func (s *Server) startUp() {
 	s.Router.Use(middleware.RealIP)
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Recoverer)
-	s.Router.Use(middleware.DefaultCompress)
+	s.Router.Use(middleware.Compress(5))
 	s.Router.Use(middleware.RedirectSlashes)
 
 	// Metrics
 	s.Router.Use(metricsMiddleware)
 
-	// Set a timeout value on the request context (ctx), that will signal
-	// through ctx.Done() that the request has timed out and further
-	// processing should be stopped.
 	s.Router.Use(middleware.Timeout(60 * time.Second))
 
-	// TODO: Remove this for prod?
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST"},
@@ -128,18 +124,14 @@ func (s *Server) startHTTP() {
 	s.Router.Use(middleware.RealIP)
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Recoverer)
-	s.Router.Use(middleware.DefaultCompress)
+	s.Router.Use(middleware.Compress(5))
 	s.Router.Use(middleware.RedirectSlashes)
 
 	// Metrics
 	s.Router.Use(metricsMiddleware)
 
-	// Set a timeout value on the request context (ctx), that will signal
-	// through ctx.Done() that the request has timed out and further
-	// processing should be stopped.
 	s.Router.Use(middleware.Timeout(60 * time.Second))
 
-	// TODO: Remove this for prod?
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST"},
@@ -242,7 +234,7 @@ func (s *Server) routes() {
 func (s *Server) apiRoutes() chi.Router {
 	r := chi.NewRouter()
 
-	middleware := stdlib.NewMiddleware(limit.New(), stdlib.WithForwardHeader(true))
+	middleware := stdlib.NewMiddleware(limit.New())
 
 	r.Get("/loaded", s.getLoaded())
 	
