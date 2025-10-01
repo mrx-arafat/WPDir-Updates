@@ -552,8 +552,12 @@ func (r *Repo) sortByLastUpdated(list []string, limit int) ([]string, error) {
 	wg.Wait()
 	r.log.Printf("Successfully fetched metadata for %d/%d %s\n", len(extensions), sampleSize, r.ExtType)
 
-	if len(extensions) == 0 {
-		return nil, errors.New("no extensions with valid metadata found")
+	// If we got very few results, we might not have enough to sort properly
+	// Return error so caller can fall back to original method
+	minRequired := limit / 2
+	if len(extensions) < minRequired {
+		r.log.Printf("Warning: Only got %d valid %s (need at least %d), falling back to unsorted list\n", len(extensions), r.ExtType, minRequired)
+		return nil, fmt.Errorf("insufficient metadata: only %d/%d %s had valid dates", len(extensions), sampleSize, r.ExtType)
 	}
 
 	// Sort by last_updated date (most recent first)
