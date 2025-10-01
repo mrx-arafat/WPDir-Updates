@@ -402,12 +402,6 @@ func (r *Repo) saveExt(e *Extension) error {
 	return nil
 }
 
-// extensionInfo holds basic info for sorting
-type extensionInfo struct {
-	Slug        string
-	LastUpdated string
-}
-
 // UpdateList updates our Plugin list.
 func (r *Repo) UpdateList(fresh *bool) error {
 	// Fetch list from WPOrg API
@@ -432,75 +426,32 @@ func (r *Repo) UpdateList(fresh *bool) error {
 		limit = r.cfg.ThemeLimit
 	}
 
-	// If limit is 0 or greater than list size, process all extensions
+	// Apply limit to the list
+	var processedList []string
 	if limit == 0 || limit >= len(list) {
 		r.log.Printf("Processing all %d %s (no limit applied)\n", len(list), r.ExtType)
-		for _, ext := range list {
-			if !utf8.Valid([]byte(ext)) {
-				r.log.Printf("Extension slug is not valid UTF8: %s\n", ext)
-				continue
-			}
-			if !r.Exists(ext) {
-				r.Add(ext)
-			}
-			if *fresh || r.Revision == 0 {
-				r.QueueUpdate(ext, rev)
-			}
-		}
-		return nil
+		processedList = list
+	} else {
+		// Take the first N extensions from the list
+		// Note: WordPress.org API returns plugins in a semi-random order
+		// For production, you may want to implement sorting by last_updated
+		// which requires fetching metadata for all plugins (slower initial load)
+		processedList = list[:limit]
+		r.log.Printf("Processing first %d %s (out of %d total)\n", limit, r.ExtType, len(list))
 	}
 
-	// Fetch metadata for all extensions to sort by last updated
-	r.log.Printf("Fetching metadata for %d %s to filter by last updated...\n", len(list), r.ExtType)
-	extInfoList := make([]extensionInfo, 0, len(list))
-
-	for _, slug := range list {
-		if !utf8.Valid([]byte(slug)) {
-			r.log.Printf("Extension slug is not valid UTF8: %s\n", slug)
+	// Process the list
+	for _, ext := range processedList {
+		if !utf8.Valid([]byte(ext)) {
+			r.log.Printf("Extension slug is not valid UTF8: %s\n", ext)
 			continue
 		}
-
-		// Fetch basic info from API
-		b, err := r.api.GetInfo(r.ExtType, slug)
-		if err != nil {
-			r.log.Printf("Failed to get info for %s: %s\n", slug, err)
-			continue
+		if !r.Exists(ext) {
+			r.Add(ext)
 		}
-
-		var info struct {
-			LastUpdated string `json:"last_updated"`
-		}
-		err = json.Unmarshal(b, &info)
-		if err != nil {
-			r.log.Printf("Failed to unmarshal info for %s: %s\n", slug, err)
-			continue
-		}
-
-		extInfoList = append(extInfoList, extensionInfo{
-			Slug:        slug,
-			LastUpdated: info.LastUpdated,
-		})
-	}
-
-	// Sort by last updated (most recent first)
-	sort.Slice(extInfoList, func(i, j int) bool {
-		return extInfoList[i].LastUpdated > extInfoList[j].LastUpdated
-	})
-
-	// Take only the top N most recently updated
-	if len(extInfoList) > limit {
-		extInfoList = extInfoList[:limit]
-	}
-
-	r.log.Printf("Processing %d most recently updated %s (out of %d total)\n", len(extInfoList), r.ExtType, len(list))
-
-	// Process the filtered list
-	for _, info := range extInfoList {
-		if !r.Exists(info.Slug) {
-			r.Add(info.Slug)
-		}
+		// If fresh start we should update all Extensions
 		if *fresh || r.Revision == 0 {
-			r.QueueUpdate(info.Slug, rev)
+			r.QueueUpdate(ext, rev)
 		}
 	}
 
