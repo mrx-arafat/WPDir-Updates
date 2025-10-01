@@ -52,7 +52,6 @@ func main() {
 	mkdirs(c.WD)
 
 	// Set Temp Dir
-	// TODO: Check error- what would we do?
 	setTempDir(c.WD)
 
 	// Setup Metrics

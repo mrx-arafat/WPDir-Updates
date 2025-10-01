@@ -28,19 +28,9 @@ func New(log *log.Logger, config *config.Config, fresh *bool) *Server {
 	pr := repo.New(config, log, "plugins", 0)
 	tr := repo.New(config, log, "themes", 0)
 
-	// TODO: Auto generate in background
-	//pr.GenerateInstallsChart()
-	//tr.GenerateInstallsChart()
-	//pr.GenerateSizeChart()
-	//tr.GenerateSizeChart()
-
 	sm := search.NewManager(config.SearchWorkers)
 	sm.Plugins = pr
 	sm.Themes = tr
-
-	// Debug Delete Searches
-	// Need to reset after break code changes
-	//sm.Empty()
 
 	s := &Server{
 		Config:  config,
