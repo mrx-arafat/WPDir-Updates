@@ -2,6 +2,13 @@
 host: http://localhost/
 updateworkers: 2
 searchworkers: 6
+
+# Limit the number of plugins and themes to index
+# Set to 0 to index all available extensions
+# Default: 5000 plugins, 1000 themes (for VPS deployment with limited resources)
+pluginlimit: 5000
+themelimit: 1000
+
 ports:
   http: 11001
   https: 11002

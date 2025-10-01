@@ -16,6 +16,8 @@ type Config struct {
 	WD            string
 	UpdateWorkers int
 	SearchWorkers int
+	PluginLimit   int
+	ThemeLimit    int
 	Host          string
 	Domains       string
 	Standalone    bool
@@ -33,6 +35,8 @@ func Setup(version, commit, date string, dev bool) *Config {
 	viper.SetDefault("date", "")
 	viper.SetDefault("updateworkers", 4)
 	viper.SetDefault("searchworkers", 6)
+	viper.SetDefault("pluginlimit", 5000)
+	viper.SetDefault("themelimit", 1000)
 	viper.SetDefault("host", "http://localhost")
 	viper.SetDefault("domains", "wpdirectory.net,www.wpdirectory.net")
 	viper.SetDefault("standalone", false)
@@ -63,6 +67,8 @@ func Setup(version, commit, date string, dev bool) *Config {
 		WD:            wd,
 		UpdateWorkers: viper.GetInt("updateworkers"),
 		SearchWorkers: viper.GetInt("searchworkers"),
+		PluginLimit:   viper.GetInt("pluginlimit"),
+		ThemeLimit:    viper.GetInt("themelimit"),
 		Host:          viper.GetString("host"),
 		Domains:       viper.GetString("domains"),
 		Standalone:    viper.GetBool("standalone"),
