@@ -22,3 +22,4 @@ It creates and maintains an up-to-date copy of all current Plugin and Theme file
 ### Why should I use WPdir?
 
 Most searches can be completed in under a minute and many can be done in less than 10 seconds. You can then share search results by URL (even with searches set to private if they are sensitive). Anyone viewing the searches can sort results to identify the most important matches and use the inbuilt file viewer to review the context of matches.
+# WPDir-Updates
