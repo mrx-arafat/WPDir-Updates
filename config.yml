@@ -1,10 +1,11 @@
 # WPdirectory Production Configuration
-host: http://localhost/
+# Use empty string for host to make frontend use relative URLs (works with any domain/IP)
+host: ""
 updateworkers: 4
 searchworkers: 6
 
-# Limit to 5000 most recent plugins and 1000 themes for VPS deployment
-pluginlimit: 5000
+# Limit to 6000 most recent plugins and 1000 themes for VPS deployment
+pluginlimit: 6000
 themelimit: 1000
 
 ports:
