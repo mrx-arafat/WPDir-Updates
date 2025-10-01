@@ -1,6 +1,6 @@
 @import 'settings';
-@import 'foundation';
-@import 'motion-ui.scss';
+@import '~foundation-sites/scss/foundation';
+@import '~motion-ui/src/motion-ui';
 
 @include foundation-global-styles;
 @include foundation-xy-grid-classes;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { withRouter } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Dashicon from '../Dashicon.js'
 import API from '../../../utils/API.js'
 
@@ -27,7 +27,7 @@ class SearchForm extends Component {
         private: !prevState.private,
       }))
     }
-  
+
     handleSubmit = (event) => {
       event.preventDefault()
       this.setState({
@@ -43,7 +43,7 @@ class SearchForm extends Component {
         this.setState({
           isLoading: false
         })
-        this.props.history.push( '/search/' + response.data.id )
+        this.props.navigate( '/search/' + response.data.id )
       })
       .catch( error => {
         if ( error.response ) {
@@ -119,4 +119,10 @@ class SearchForm extends Component {
     }
 }
 
-export default withRouter(SearchForm)
+// Wrapper to use hooks with class component
+function SearchFormWithNavigate(props) {
+  const navigate = useNavigate();
+  return <SearchForm {...props} navigate={navigate} />;
+}
+
+export default SearchFormWithNavigate

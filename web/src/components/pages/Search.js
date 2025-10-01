@@ -3,7 +3,7 @@ import Loadicon from '../general/Loadicon.js'
 import ProgressBlock from '../general/ProgressBlock.js'
 import Summary from '../general/search/Summary.js'
 import API from '../../utils/API.js'
-import timeago from 'timeago.js'
+import { format } from 'timeago.js'
 
 class Search extends Component {
   constructor(props) {
@@ -116,7 +116,7 @@ class Search extends Component {
     let timeSince
     if (this.state.status === 2) {
       duration = this.timeTaken()
-      timeSince = timeago().format(this.state.completed)
+      timeSince = format(this.state.completed)
     }
     switch( this.state.status ) {
       case 2:

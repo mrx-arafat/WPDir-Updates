@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import timeago from 'timeago.js'
+import { format } from 'timeago.js'
 import Loadicon from '../general/Loadicon.js'
 import API from '../../utils/API.js'
 
@@ -72,7 +72,7 @@ class Repos extends Component {
             <li><span className="name">Total</span> {plugins.total}</li>
             <li><span className="name">Open</span> {plugins.total - plugins.closed}</li>
             <li><span className="name">Closed</span> {plugins.closed}</li>
-            <li><span className="name">Last updated</span> <time dateTime={plugins.updated} title={plugins.updated}>{timeago().format(Date.parse(plugins.updated))}</time></li>
+            <li><span className="name">Last updated</span> <time dateTime={plugins.updated} title={plugins.updated}>{format(Date.parse(plugins.updated))}</time></li>
           </ul>
         )
         themesContent = (
@@ -81,7 +81,7 @@ class Repos extends Component {
             <li><span className="name">Total</span> {themes.total}</li>
             <li><span className="name">Open</span> {themes.total - themes.closed}</li>
             <li><span className="name">Closed</span> {themes.closed}</li>
-            <li><span className="name">Last updated</span> <time dateTime={themes.updated} title={themes.updated}>{timeago().format(Date.parse(themes.updated))}</time></li>
+            <li><span className="name">Last updated</span> <time dateTime={themes.updated} title={themes.updated}>{format(Date.parse(themes.updated))}</time></li>
           </ul>
         )
       }

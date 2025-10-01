@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './assets/scss/app.scss'
 
@@ -21,16 +21,16 @@ class App extends Component {
           <Header />
 
           <section className="content cell medium-auto medium-cell-block-container">
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/searches" component={Searches} />
-              <Route path="/search/new" component={Home} />
-              <Route path="/search/:id" component={Search} />
-              <Route path="/repos" component={Repos} />
-              <Route path="/about" component={About} />
-              <Route path="/examples" component={Examples} />
-              <Route component={NotFound} />
-            </Switch>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/searches" element={<Searches />} />
+              <Route path="/search/new" element={<Home />} />
+              <Route path="/search/:id" element={<Search />} />
+              <Route path="/repos" element={<Repos />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/examples" element={<Examples />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </section>
 
           <Footer />
