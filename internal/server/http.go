@@ -48,6 +48,7 @@ func (s *Server) startUp() {
 	s.Router.Use(cors.Handler)
 
 	FileServer(s.Router, "/assets")
+	FileServer(s.Router, "/static")
 
 	// Add root routes
 	s.routes()
@@ -143,6 +144,7 @@ func (s *Server) startHTTP() {
 	s.Router.Use(cors.Handler)
 
 	FileServer(s.Router, "/assets")
+	FileServer(s.Router, "/static")
 
 	s.routes()
 

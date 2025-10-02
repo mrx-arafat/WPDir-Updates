@@ -1,22 +1,30 @@
 [Unit]
-Description=WPDirectory
+Description=WPDirectory - WordPress Plugin and Theme Directory Search
+Documentation=https://github.com/wpdirectory/wpdir
 After=network-online.target
-Wants=network-online.target systemd-networkd-wait-online.service
+Wants=network-online.target
 
 [Service]
 Type=simple
-User=wpdir
-Group=wpdir
-KillMode=mixed
-KillSignal=SIGQUIT
-TimeoutStopSec=5s
-ProtectHome=true
+User=root
+Group=root
+WorkingDirectory=/var/www/wpdir
+ExecStart=/var/www/wpdir/wpdir
+Restart=always
+RestartSec=10s
+StandardOutput=append:/var/www/wpdir/wpdir.log
+StandardError=append:/var/www/wpdir/wpdir.log
 
-ProtectSystem=full
-ReadWriteDirectories=/etc/wpdir
+# Don't kill on timeout during startup (loading can take time)
+TimeoutStartSec=infinity
+TimeoutStopSec=30s
 
-WorkingDirectory=/etc/wpdir
-ExecStart=/usr/local/bin/wpdir
+# Security settings
+PrivateTmp=true
+NoNewPrivileges=false
+
+# Resource limits
+LimitNOFILE=65536
 
 [Install]
 WantedBy=multi-user.target

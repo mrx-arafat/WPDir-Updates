@@ -66,13 +66,39 @@ class Repos extends Component {
         pluginsContent = <p className="error">Sorry, there was a problem fetching data.</p>
         themesContent = <p className="error">Sorry, there was a problem fetching data.</p>
       } else {
+        // Safely format dates
+        let pluginsUpdatedFormatted = 'Unknown'
+        let themesUpdatedFormatted = 'Unknown'
+
+        if (plugins.updated) {
+          const pluginsDate = Date.parse(plugins.updated)
+          if (!isNaN(pluginsDate)) {
+            try {
+              pluginsUpdatedFormatted = format(pluginsDate)
+            } catch (e) {
+              console.error('Error formatting plugins date:', e)
+            }
+          }
+        }
+
+        if (themes.updated) {
+          const themesDate = Date.parse(themes.updated)
+          if (!isNaN(themesDate)) {
+            try {
+              themesUpdatedFormatted = format(themesDate)
+            } catch (e) {
+              console.error('Error formatting themes date:', e)
+            }
+          }
+        }
+
         pluginsContent = (
           <ul className="details">
             <li><span className="name">Revision</span> {plugins.revision}</li>
             <li><span className="name">Total</span> {plugins.total}</li>
             <li><span className="name">Open</span> {plugins.total - plugins.closed}</li>
             <li><span className="name">Closed</span> {plugins.closed}</li>
-            <li><span className="name">Last updated</span> <time dateTime={plugins.updated} title={plugins.updated}>{format(Date.parse(plugins.updated))}</time></li>
+            <li><span className="name">Last updated</span> <time dateTime={plugins.updated} title={plugins.updated}>{pluginsUpdatedFormatted}</time></li>
           </ul>
         )
         themesContent = (
@@ -81,7 +107,7 @@ class Repos extends Component {
             <li><span className="name">Total</span> {themes.total}</li>
             <li><span className="name">Open</span> {themes.total - themes.closed}</li>
             <li><span className="name">Closed</span> {themes.closed}</li>
-            <li><span className="name">Last updated</span> <time dateTime={themes.updated} title={themes.updated}>{format(Date.parse(themes.updated))}</time></li>
+            <li><span className="name">Last updated</span> <time dateTime={themes.updated} title={themes.updated}>{themesUpdatedFormatted}</time></li>
           </ul>
         )
       }

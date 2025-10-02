@@ -1,0 +1,23 @@
+[Unit]
+Description=WPDirectory Auto-Update Service
+Documentation=https://github.com/wpdirectory/wpdir
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/var/www/wpdir
+ExecStart=/bin/bash /var/www/wpdir/scripts/auto-update.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wpdir-auto-update
+
+# Security settings
+PrivateTmp=true
+NoNewPrivileges=false
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,16 @@
+[Unit]
+Description=WPDirectory Auto-Update Timer (Every 3 Days)
+Documentation=https://github.com/wpdirectory/wpdir
+Requires=wpdir-auto-update.service
+
+[Timer]
+# Run every 3 days at 2:00 AM
+OnCalendar=*-*-1,4,7,10,13,16,19,22,25,28,31 02:00:00
+# If the system was off when the timer should have run, run it on next boot
+Persistent=true
+# Randomize start time by up to 30 minutes to avoid load spikes
+RandomizedDelaySec=30min
+
+[Install]
+WantedBy=timers.target
+

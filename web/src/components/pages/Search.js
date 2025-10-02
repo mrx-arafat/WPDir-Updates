@@ -32,22 +32,31 @@ class Search extends Component {
 
   fetchData = () => {
     API.get( '/search/' + this.props.match.params.id )
-      .then( result => this.setState({
-        id: result.data.id,
-        input: result.data.input,
-        repo: result.data.repo,
-        queue: ( result.data.queue_pos ? result.data.queue_pos : -1 ),
-        progress: result.data.progress,
-        status: result.data.status,
-        matches: result.data.matches,
-        started: Date.parse(result.data.started),
-        completed: ( result.data.completed ? Date.parse(result.data.completed) : 0 ),
-        isLoading: false
-      }))
-      .catch(error => this.setState({
-        error,
-        isLoading: false
-      }))
+      .then( result => {
+        // Safely parse dates
+        const startedDate = result.data.started ? Date.parse(result.data.started) : 0
+        const completedDate = result.data.completed ? Date.parse(result.data.completed) : 0
+
+        this.setState({
+          id: result.data.id,
+          input: result.data.input,
+          repo: result.data.repo,
+          queue: ( result.data.queue_pos ? result.data.queue_pos : -1 ),
+          progress: result.data.progress,
+          status: result.data.status,
+          matches: result.data.matches,
+          started: !isNaN(startedDate) ? startedDate : 0,
+          completed: !isNaN(completedDate) ? completedDate : 0,
+          isLoading: false
+        })
+      })
+      .catch(error => {
+        console.error('Failed to fetch search data:', error)
+        this.setState({
+          error,
+          isLoading: false
+        })
+      })
   }
 
   getStatus = (code) => {
@@ -116,7 +125,17 @@ class Search extends Component {
     let timeSince
     if (this.state.status === 2) {
       duration = this.timeTaken()
-      timeSince = format(this.state.completed)
+      // Safely format the completed time
+      try {
+        if (this.state.completed && !isNaN(this.state.completed) && this.state.completed > 0) {
+          timeSince = format(this.state.completed)
+        } else {
+          timeSince = 'recently'
+        }
+      } catch (e) {
+        console.error('Error formatting completed time:', e)
+        timeSince = 'recently'
+      }
     }
     switch( this.state.status ) {
       case 2:
